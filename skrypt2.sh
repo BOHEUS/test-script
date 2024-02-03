@@ -96,13 +96,13 @@ FDISK_CMDS
 		# Configuring the system
 		whiptail --infobox "Configuring the system" 7 50
 		genfstab -U /mnt >> /mnt/etc/fstab
-		arch-chroot /mnt
-		ln -sf /usr/share/zoneinfo/Poland
-		hwclock --systohc
-		vim /etc/locale.gen -c ":s/#pl_PL./pl_PL./g" -c ":wq"
-		echo "LANG=pl_PL.UTF-8" >> /etc/locale.conf
-		echo "KEYMAP=pl" >> /etc/vconsole.conf
-		echo "Arch" >> /etc/hostname
+		# arch-chroot /mnt
+		ln -sf /mnt/usr/share/zoneinfo/Poland /mnt/etc/localtime
+		chroot /mnt /bin/bash -c "hwclock --systohc"
+		vim /mnt/etc/locale.gen -c ":s/#pl_PL./pl_PL./g" -c ":wq"
+		echo "LANG=pl_PL.UTF-8" >> /mnt/etc/locale.conf
+		echo "KEYMAP=pl" >> /mnt/etc/vconsole.conf
+		echo "Arch" >> /mnt/etc/hostname
 		mkinitcpio -P
 }
 
@@ -208,7 +208,7 @@ pipinstall() {
 installationloop() {
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
-	total=$(wc -l </tmp/app.csv)
+	total=$(wc -l </tmp/progs.csv)
 	aurinstalled=$(pacman -Qqm)
 	while IFS=, read -r tag program comment; do
 		n=$((n + 1))
@@ -220,7 +220,7 @@ installationloop() {
 		"P") pipinstall "$program" "$comment" ;;
 		*) maininstall "$program" "$comment" ;;
 		esac
-	done </tmp/app.csv
+	done </tmp/progs.csv
 }
 
 multilib(){
