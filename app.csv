@@ -1,0 +1,98 @@
+"tag";"name";"comment"
+"A";"davinci-resolve";"for editing video."
+;"docker";"for contenerization."
+"A";"xampp";"for hacking web apps in PHP."
+;"monero";"for cryptocurrency."
+;"lutris";"for emulating various games (sadly not anymore League of Legends)."
+"A";"python312";"for Python."
+"G";"https://github.com/ruby/ruby.git";"for Ruby."
+;"r";"for R."
+;"gcc-fortran";"for Fortran."
+;"clang";"for C/C++."
+;"ffmpeg";"for many ways of usage."
+;"zsh";"for better shell."
+;"freecad";"for being happy with free version of OpenCAD."
+;"jre-openjdk";"for feeling miserable due to Java."
+;"steam";"for games."
+"A";"brave-bin";"for browsing Internet with Chromium (Chrome is bad)."
+"A";"librewolf-bin";"for being better version of Firefox."
+;"discord";"for communicating."
+;"pipewire";"for audio."
+"A";"vscodium";"for programming."
+"A";"neovim-git";"for programming."
+;"calibre";"for reading e-books."
+;"gimp";"for drawing."
+"A";"android-studio";"for programming Android apps."
+;"libreoffice-fresh";"for being free MS Office (sadly not better in terms of functionality)."
+;"qemu-full";"for emulating OSes."
+;"htop";"for checking PC’s usage."
+;"virtualbox-host-dkms";"for being wrapper around qemu."
+;"qmmp";"for playing music."
+;"audacity";"for editing audio."
+;"vlc";"for playing video."
+;"alacritty";"for being terminal using GPU."
+"A";"arduino-ide-bin";"for Arduino stuff."
+;"teams";"for communicating with others (work/university stuff)."
+;"obs-studio";"for optional recording."
+;"putty";"for managing mostly SSH sessions."
+;"ranger";"for file manager in terminal."
+;"wireshark";"for checking network traffic."
+;"balena";"for “burning” USB drives."
+;"tmux";"for having multiple terminals on one screen."
+"A";"tmux-bash-completion-git";
+;"texlive";"for LaTeX aka university stuff."
+"A";"lf-git";"for alternative to ranger."
+;"fastfetch";"for newer and better alternative to neofetch."
+"A";"speedread-git";"for fast reading books (it’s about efficiency, not having fun, so be aware of that)."
+;"zathura";"for reading documents."
+;"bat";"for better alternative to cat."
+;"exa";"for better alternative to ls."
+;"git-delta";"for pager for git."
+;"dust";"for alternative to du."
+;"duf";"for alternative to df."
+;"broot";"for navigating directory trees."
+;"ripgrep";"for faster grep."
+;"fzf";"for fuzzy finder."
+;"jq";"for reading JSON data in shell."
+;"sd";"for find and replace aka alternative to sed."
+"A";"cheat-bin";"for having cheatsheets about different common commands."
+;"tldr";"for alternative to man pages."
+;"bottom";"for nicer visual to htop."
+;"curlie";"for alternative to curl."
+;"dog";"for alternative to nslookup."
+;"zsh-theme-powerlevel10k";"for zsh theme."
+;"flameshot";"for screenshotting."
+"A";"unityhub";"for creating games in Unity."
+;"xorg-server";
+;"xorg-xwininfo";
+;"xorg-init";
+;"Libertinus-font";
+;"ttf-font-awesome";
+;"ttf-dejavu";
+;"ueberzug";
+;"xcompmgr";
+;"xorg-xprop";
+;"dosfstools";
+;"libnotify";
+;"Exfat-utils";
+;"nsxiv";
+;"xwallpaper";
+;"ffmpegthumbnailer";
+;"gnome-keyring";
+;"newsboat";
+"A";"arkenfox-user.js";
+;"noto-fonts";
+;"noto-fonts-emoji";
+;"ntfs-3g";
+;"pipewire-pulse";
+;"unclutter";
+;"unzip";
+;"yt-dlp";
+;"zathura-pdf-mupdf";
+;"poppler";
+;"atool";
+;"xorg-xbacklight";
+"A";"zsh-fast-syntax-highlighting-git";
+;"slock";
+;"moreutils";
+;"mold";
