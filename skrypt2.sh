@@ -98,7 +98,7 @@ FDISK_CMDS
 		echo "KEYMAP=pl" >> /mnt/etc/vconsole.conf
 		echo "Arch" >> /mnt/etc/hostname
 		mkinitcpio -P
-		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt2.sh > /mnt/skrypt2.sh
+		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt.sh > /mnt/skrypt.sh
 		chmod +x /mnt/skrypt2.#!/bin/sh
 		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/app.csv > /mnt/progs.csv
 }
