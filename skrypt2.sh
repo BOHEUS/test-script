@@ -208,7 +208,7 @@ pipinstall() {
 installationloop() {
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
-	total=$(wc -l </tmp/progs.csv)
+	total=$(wc -l </tmp/app.csv)
 	aurinstalled=$(pacman -Qqm)
 	while IFS=, read -r tag program comment; do
 		n=$((n + 1))
@@ -220,7 +220,7 @@ installationloop() {
 		"P") pipinstall "$program" "$comment" ;;
 		*) maininstall "$program" "$comment" ;;
 		esac
-	done </tmp/progs.csv
+	done </tmp/app.csv
 }
 
 multilib(){
