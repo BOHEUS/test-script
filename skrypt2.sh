@@ -16,7 +16,7 @@ beginning(){
 		# Checking if BIOS is UEFI
 		if [ $bios = 64 ]; then
 				# Partitioning disk
-				sed -e 's/\s*([\+0-9a-zA-Z]*\).*/\1/' << FDISK_CMDS | fdisk /dev/sda
+				sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << FDISK_CMDS | fdisk /dev/sda
 				g		# new GPT partition
 				n		# add new partition UEFI
 				1		# partition number
@@ -52,29 +52,21 @@ FDISK_CMDS
 				# BIOS is not UEFI
 		elif [ $bios = 32 ]; then
 				# Partitioning disk (fix it - to do)
-				sed -e 's/\s*([\+0-9a-zA-Z]*\).*/\1/' << FDISK_CMDS | fdisk /dev/sda
-				g		# new GPT partition
-				n		# add new partition UEFI
+				sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << FDISK_CMDS | fdisk /dev/sda
+				o		# new GPT partition
+				n
+				p		# add new partition UEFI
 				1		# partition number
 						# first sector
 				+1GiB	# size
-				n		# add new partition swap
+				n
+				p		# add new partition swap
 				2		# partition number
 						# first sector
-				+20GiB	# size
-				n		# add new partition
-				3		# partition number
-						# first sector
 						# size is rest of free space
-				t		# partition type
-				1		# first partition
-				uefi	# UEFI
-				t		# partition type
-				2		# second partition
-				swap	# swap
-				t		# partition type
-				3		# third partition
-				linux	# linux filesystem
+				a
+				1
+				p
 				w		# write partition table and exit
 FDISK_CMDS
 				# Formatting partitions
@@ -98,10 +90,10 @@ FDISK_CMDS
 		echo "KEYMAP=pl" >> /mnt/etc/vconsole.conf
 		echo "Arch" >> /mnt/etc/hostname
 		mkinitcpio -P
-		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt2.sh > /mnt/skrypt2.sh
-		chmod +x /mnt/skrypt2.sh
+		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt.sh > /mnt/skrypt.sh
+		chmod +x /mnt/skrypt.sh
 		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/app.csv > /mnt/progs.csv
-		arch-chroot /mnt /bin/bash -c "./skrypt2.sh"
+		arch-chroot /mnt /bin/bash -c "./skrypt.sh"
 }
 
 beginning
