@@ -123,8 +123,13 @@ installationloop() {
 }
 
 multilib(){
-	echo "[multilib]
-Include = /etc/pacman.d/mirrorlist" > /etc/pacman.d/mirrorlist
+	vim /etc/pacman.conf << EE
+		/#\[multilib\]
+		x
+		x
+		:wq
+EE
+	pacman -Syu
 }
 
 end(){
