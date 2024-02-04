@@ -78,7 +78,7 @@ FDISK_CMDS
 		fi
 		# Installing necessities
 		whiptail --infobox "Installing most basic packages" 7 50
-		pacstrap -K /mnt base linux-hardened linux-firmware vim brtfs-progs amd-ucode
+		pacstrap -K /mnt base linux-hardened linux-firmware vim btrfs-progs amd-ucode
 		# Configuring the system
 		whiptail --infobox "Configuring the system" 7 50
 		genfstab -U /mnt >> /mnt/etc/fstab
