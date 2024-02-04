@@ -82,9 +82,9 @@ FDISK_CMDS
 		# Configuring the system
 		whiptail --infobox "Configuring the system" 7 50
 		genfstab -U /mnt >> /mnt/etc/fstab
-		# arch-chroot /mnt
 		ln -sf /mnt/usr/share/zoneinfo/Poland /mnt/etc/localtime
 		chroot /mnt /bin/bash -c "hwclock --systohc"
+		[ -f /mnt/etc/locale.gen.pacnew ] && cp /mnt/etc/locale.gen.pacnew /mnt/etc/locale.gen
 		vim /mnt/etc/locale.gen -c ":s/#pl_PL./pl_PL./g" -c ":wq"
 		echo "LANG=pl_PL.UTF-8" >> /mnt/etc/locale.conf
 		echo "KEYMAP=pl" >> /mnt/etc/vconsole.conf
