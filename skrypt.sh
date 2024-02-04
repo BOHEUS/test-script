@@ -142,12 +142,9 @@ end(){
 pacman --noconfirm --needed -Sy libnewt ||
 	error "Are you sure you're running this as the root user, are on an Arch-based distribution and have an internet connection?"
 
-# Preparing the system
-beginning
-
 # Refreshing keyrings
 refreshkeys
-for x in curl ca-certificates base-devel coreutils-git zsh; do
+for x in curl ca-certificates base-devel coreutils git zsh; do
 	installpkg "$x"
 done
 
@@ -184,11 +181,9 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 installationloop
 
 # Install dotfiles
-putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml"
 
 # Install vim plugins
-[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
+#[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
 
 # Get rid of beep (just in case)
 rmmod pcspkr
