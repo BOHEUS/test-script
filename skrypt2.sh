@@ -78,22 +78,32 @@ FDISK_CMDS
 		fi
 		# Installing necessities
 		whiptail --infobox "Installing most basic packages" 7 50
-		pacstrap -K /mnt base linux-hardened linux-firmware vim btrfs-progs amd-ucode
+		reflector -c Poland -a 6 --sort rate --save /etc/pacman.d/mirrorlist
+		pacman -Syy
+		pacstrap -K /mnt base linux-hardened linux-firmware vim btrfs-progs amd-ucode grub efibootmgr networkmanager iwd wget less
 		# Configuring the system
 		whiptail --infobox "Configuring the system" 7 50
 		genfstab -U /mnt >> /mnt/etc/fstab
 		ln -sf /mnt/usr/share/zoneinfo/Poland /mnt/etc/localtime
-		chroot /mnt /bin/bash -c "hwclock --systohc"
+		arch-chroot /mnt /bin/bash -c "hwclock --systohc"
 		[ -f /mnt/etc/locale.gen.pacnew ] && cp /mnt/etc/locale.gen.pacnew /mnt/etc/locale.gen
-		vim /mnt/etc/locale.gen -c ":s/#pl_PL./pl_PL./g" -c ":wq"
+		vim /mnt/etc/locale.gen << EE
+		/#pl_PL.
+		x
+		:wq
+EE
+		arch-chroot /mnt /bin/bash -c "locale-gen"
 		echo "LANG=pl_PL.UTF-8" >> /mnt/etc/locale.conf
 		echo "KEYMAP=pl" >> /mnt/etc/vconsole.conf
 		echo "Arch" >> /mnt/etc/hostname
-		mkinitcpio -P
-		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt.sh > /mnt/skrypt.sh
+		arch-chroot /mnt /bin/bash -c "mkinitcpio -P"
+		arch-chroot /mnt /bin/bash -c "passwd"
+		arch-chroot /mnt /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB"
+		arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+		curl -LO https://raw.githubusercontent.com/BOHEUS/test-script/main/skrypt.sh
 		chmod +x /mnt/skrypt.sh
 		curl https://raw.githubusercontent.com/BOHEUS/test-script/main/app.csv > /mnt/progs.csv
-		arch-chroot /mnt /bin/bash -c "./skrypt.sh"
+		
 }
 
 beginning
