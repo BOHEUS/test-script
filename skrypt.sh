@@ -47,10 +47,6 @@ Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
 	esac
 }
 
-installpkg(){
-	pacman --noconfirm --needed -S "$1" >/dev/null 2>&1
-}
-
 aurhelperinstall(){
 	pacman -Qq "$1" && return 0
 	whiptail --infobox "Installing \"$1\" manually." 7 50
@@ -62,14 +58,14 @@ aurhelperinstall(){
 			sudo -u "$name" git pull --force origin master
 		}
 	cd "$repodir/$1" || exit 1
-	sudo -u "$name" -D "$repodir/$1" \
+	sudo -u "$name" \
 		makepkg --noconfirm -si >/dev/null 2>&1 || return 1
 }
 
 maininstall() {
 	# Installs all needed programs from main repo.
 	whiptail --title "LARBS Installation" --infobox "Installing \`$1\` ($n of $total). $1 $2" 9 70
-	installpkg "$1"
+	pacman --noconfirm --needed -S "$1" >/dev/null 2>&1
 }
 
 gitmakeinstall() {
@@ -97,13 +93,6 @@ aurinstall() {
 	sudo -u "$name" $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
 }
 
-pipinstall() {
-	whiptail --title "LARBS Installation" \
-		--infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 9 70
-	[ -x "$(command -v "pip")" ] || installpkg python-pip >/dev/null 2>&1
-	yes | pip install "$1"
-}
-
 installationloop() {
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
@@ -116,10 +105,72 @@ installationloop() {
 		case "$tag" in
 		"A") aurinstall "$program" "$comment" ;;
 		"G") gitmakeinstall "$program" "$comment" ;;
-		"P") pipinstall "$program" "$comment" ;;
 		*) maininstall "$program" "$comment" ;;
 		esac
 	done </tmp/progs.csv
+}
+
+vimplugininstall() {
+	# Installs vim plugins.
+	whiptail --infobox "Installing neovim plugins..." 7 60
+	mkdir -p "/home/$name/.config/nvim/autoload"
+	curl -Ls "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" >  "/home/$name/.config/nvim/autoload/plug.vim"
+	chown -R "$name:wheel" "/home/$name/.config/nvim"
+	sudo -u "$name" nvim -c "PlugInstall|q|q"
+}
+
+makeuserjs(){
+	# Get the Arkenfox user.js and prepare it.
+	arkenfox="$pdir/arkenfox.js"
+	overrides="$pdir/user-overrides.js"
+	userjs="$pdir/user.js"
+	ln -fs "/home/$name/.config/firefox/larbs.js" "$overrides"
+	[ ! -f "$arkenfox" ] && curl -sL "https://raw.githubusercontent.com/arkenfox/user.js/master/user.js" > "$arkenfox"
+	cat "$arkenfox" "$overrides" > "$userjs"
+	chown "$name:wheel" "$arkenfox" "$userjs"
+	# Install the updating script.
+	mkdir -p /usr/local/lib /etc/pacman.d/hooks
+	cp "/home/$name/.local/bin/arkenfox-auto-update" /usr/local/lib/
+	chown root:root /usr/local/lib/arkenfox-auto-update
+	chmod 755 /usr/local/lib/arkenfox-auto-update
+	# Trigger the update when needed via a pacman hook.
+	echo "[Trigger]
+Operation = Upgrade
+Type = Package
+Target = firefox
+Target = librewolf
+Target = librewolf-bin
+[Action]
+Description=Update Arkenfox user.js
+When=PostTransaction
+Depends=arkenfox-user.js
+Exec=/usr/local/lib/arkenfox-auto-update" > /etc/pacman.d/hooks/arkenfox.hook
+}
+
+installffaddons(){
+	addonlist="ublock-origin decentraleyes istilldontcareaboutcookies vim-vixen"
+	addontmp="$(mktemp -d)"
+	trap "rm -fr $addontmp" HUP INT QUIT TERM PWR EXIT
+	IFS=' '
+	sudo -u "$name" mkdir -p "$pdir/extensions/"
+	for addon in $addonlist; do
+		if [ "$addon" = "ublock-origin" ]; then
+			addonurl="$(curl -sL https://api.github.com/repos/gorhill/uBlock/releases/latest | grep -E 'browser_download_url.*\.firefox\.xpi' | cut -d '"' -f 4)"
+		else
+			addonurl="$(curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${addon}/" | grep -o 'https://addons.mozilla.org/firefox/downloads/file/[^"]*')"
+		fi
+		file="${addonurl##*/}"
+		sudo -u "$name" curl -LOs "$addonurl" > "$addontmp/$file"
+		id="$(unzip -p "$file" manifest.json | grep "\"id\"")"
+		id="${id%\"*}"
+		id="${id##*\"}"
+		mv "$file" "$pdir/extensions/$id.xpi"
+	done
+	chown -R "$name:$name" "$pdir/extensions"
+	# Fix a Vim Vixen bug with dark mode not fixed on upstream:
+	sudo -u "$name" mkdir -p "$pdir/chrome"
+	[ ! -f  "$pdir/chrome/userContent.css" ] && sudo -u "$name" echo ".vimvixen-console-frame { color-scheme: light !important; }
+#category-more-from-mozilla { display: none !important }" > "$pdir/chrome/userContent.css"
 }
 
 multilib(){
@@ -144,8 +195,8 @@ pacman --noconfirm --needed -Sy libnewt ||
 
 # Refreshing keyrings
 refreshkeys
-for x in curl ca-certificates base-devel coreutils git zsh; do
-	installpkg "$x"
+for x in curl ca-certificates base-devel coreutils ntp git zsh; do
+	pacman --noconfirm --needed -S "$x" >/dev/null 2>&1
 done
 
 # Creating new user
@@ -176,6 +227,7 @@ multilib
 
 # Install rust language
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+echo "1"
 
 # Install all programs
 installationloop
@@ -183,7 +235,7 @@ installationloop
 # Install dotfiles
 
 # Install vim plugins
-#[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
+[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
 
 # Get rid of beep (just in case)
 rmmod pcspkr
