@@ -193,11 +193,17 @@ end(){
 pacman --noconfirm --needed -Sy libnewt ||
 	error "Are you sure you're running this as the root user, are on an Arch-based distribution and have an internet connection?"
 
+mv /progs.csv /tmp/progs.csv
+
 # Refreshing keyrings
 refreshkeys
 for x in curl ca-certificates base-devel coreutils ntp git zsh; do
 	pacman --noconfirm --needed -S "$x" >/dev/null 2>&1
 done
+
+whiptail --title "LARBS Installation" \
+	--infobox "Synchronizing system time to ensure successful and secure installation of software..." 8 70
+ntpd -q -g >/dev/null 2>&1
 
 # Creating new user
 newuser
